@@ -16,13 +16,12 @@
 
   <h1>Course Management</h1>
 
-  <!-- form to add a course -->
+
   <input type="text" id="name" placeholder="Course Name">
   <input type="text" id="code" placeholder="Course Code">
   <input type="text" id="department" placeholder="Department">
   <button onclick="addCourse()">Add Course</button>
 
-  <!-- table to show courses -->
   <table>
     <thead>
       <tr>
@@ -37,7 +36,7 @@
   </table>
 
   <script>
-    // get all courses from the server and show them in the table
+
     function loadCourses() {
       fetch("/courses")
         .then(function (res) { return res.json(); })
@@ -57,7 +56,7 @@
         });
     }
 
-    // send a new course to the server
+
     function addCourse() {
       var name = document.getElementById("name").value;
       var code = document.getElementById("code").value;
@@ -81,13 +80,11 @@
       });
     }
 
-    // delete a course
     function deleteCourse(id) {
       fetch("/courses/" + id, { method: "DELETE" })
         .then(function () { loadCourses(); });
     }
 
-    // show courses when page opens
     loadCourses();
   </script>
 
