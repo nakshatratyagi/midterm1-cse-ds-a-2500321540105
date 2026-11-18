@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Course Management</title>
+  <style>
+    body { font-family: Arial; margin: 30px; background: #f2f2f2; }
+    h1 { color: #333; }
+    input { padding: 8px; margin: 5px; }
+    button { padding: 8px 14px; cursor: pointer; }
+    table { border-collapse: collapse; margin-top: 20px; background: white; }
+    th, td { border: 1px solid #999; padding: 8px 14px; }
+    th { background: #ddd; }
+  </style>
+</head>
+<body>
+
+  <h1>Course Management</h1>
+
+  <!-- form to add a course -->
+  <input type="text" id="name" placeholder="Course Name">
+  <input type="text" id="code" placeholder="Course Code">
+  <input type="text" id="department" placeholder="Department">
+  <button onclick="addCourse()">Add Course</button>
+
+  <!-- table to show courses -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Course Name</th>
+        <th>Course Code</th>
+        <th>Department</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="courseList"></tbody>
+  </table>
+
+  <script>
+    // get all courses from the server and show them in the table
+    function loadCourses() {
+      fetch("/courses")
+        .then(function (res) { return res.json(); })
+        .then(function (courses) {
+          var rows = "";
+          for (var i = 0; i < courses.length; i++) {
+            var c = courses[i];
+            rows += "<tr>" +
+              "<td>" + c.id + "</td>" +
+              "<td>" + c.name + "</td>" +
+              "<td>" + c.code + "</td>" +
+              "<td>" + c.department + "</td>" +
+              "<td><button onclick='deleteCourse(" + c.id + ")'>Delete</button></td>" +
+              "</tr>";
+          }
+          document.getElementById("courseList").innerHTML = rows;
+        });
+    }
+
+    // send a new course to the server
+    function addCourse() {
+      var name = document.getElementById("name").value;
+      var code = document.getElementById("code").value;
+      var department = document.getElementById("department").value;
+
+      if (name == "" || code == "" || department == "") {
+        alert("Please fill all fields");
+        return;
+      }
+
+      fetch("/courses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name, code: code, department: department })
+      }).then(function () {
+        // clear the input boxes and reload the table
+        document.getElementById("name").value = "";
+        document.getElementById("code").value = "";
+        document.getElementById("department").value = "";
+        loadCourses();
+      });
+    }
+
+    // delete a course
+    function deleteCourse(id) {
+      fetch("/courses/" + id, { method: "DELETE" })
+        .then(function () { loadCourses(); });
+    }
+
+    // show courses when page opens
+    loadCourses();
+  </script>
+
+</body>
+</html>
